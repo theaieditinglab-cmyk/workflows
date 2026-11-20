@@ -58,7 +58,10 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .ver{background:transparent;border-color:var(--line);color:var(--ink)}
 .copiar{background:var(--clay);color:var(--on-clay)}
 .copiar:active{background:var(--clay-dark)}
-.copiar.ok{background:var(--ok);color:var(--card)}
+.copiar.ok,.coment.ok{background:var(--ok);color:var(--card);border-color:var(--ok)}
+.coment{background:transparent;border-color:var(--clay);color:var(--clay-dark)}
+.ver-link{font:600 14px var(--body);color:var(--ink);text-decoration:underline;text-underline-offset:3px;justify-self:start}
+.ver-link:focus-visible{outline:3px solid var(--clay);outline-offset:2px;border-radius:4px}
 .peek{background:none;border:0;padding:0;font:500 13px var(--body);color:var(--clay-dark);cursor:pointer;justify-self:start}
 .empty{padding:30px 6px;color:var(--soft);font-size:15px}
 footer{margin-top:28px;font-size:13.5px;color:var(--soft);max-width:62ch}
@@ -73,8 +76,8 @@ footer{margin-top:28px;font-size:13.5px;color:var(--soft);max-width:62ch}
     <h1>Workflows del Lab</h1>
     <ul class="how">
       <li>1. Busque la <b>palabra</b> que comentaron</li>
-      <li>2. Toque <b>Copiar mensaje</b></li>
-      <li>3. Péguelo en el <b>DM</b></li>
+      <li>2. <b>Copiar DM</b> → péguelo en el mensaje directo</li>
+      <li>3. <b>Copiar comentario</b> → respóndale en el reel</li>
     </ul>
   </header>
 
@@ -140,6 +143,22 @@ if (repetidas.length) {
   av.textContent = "Ojo: estas palabras están repetidas, avísele a Claude: " + [...new Set(repetidas)].join(", ");
   document.querySelector(".searchbar").before(av);
 }
+// Respuesta pública en el reel. Se turnan para que Instagram no vea el mismo comentario repetido.
+const COMENTARIOS = [
+  "Sent! Check your DMs 📩",
+  "Just sent it to your DMs 🙌",
+  "Done! The workflow is in your DMs ✨",
+  "Check your inbox, it's there 📬",
+  "On its way to your DMs 🚀",
+  "Sent you the full workflow, enjoy! 🙌",
+  "It's in your DMs now 💌",
+  "Sent! Have fun with it ✨",
+];
+let ultimo = -1;
+function comentario(){
+  let i; do { i = Math.floor(Math.random() * COMENTARIOS.length); } while (i === ultimo && COMENTARIOS.length > 1);
+  ultimo = i; return COMENTARIOS[i];
+}
 const grid = document.getElementById("grid");
 const cards = WORKFLOWS.map(([kw, marca, url], i) => {
   const texto = mensaje(kw, marca, url);
@@ -149,41 +168,44 @@ const cards = WORKFLOWS.map(([kw, marca, url], i) => {
   el.innerHTML = `
     <div class="top"><span class="kw"></span><span class="brand"></span></div>
     <div class="actions">
-      <a class="btn ver" target="_blank" rel="noopener">Ver workflow</a>
-      <button class="btn copiar" type="button" id="copiar-${i}">Copiar mensaje</button>
+      <button class="btn copiar" type="button" id="copiar-${i}">Copiar DM</button>
+      <button class="btn coment" type="button" id="coment-${i}">Copiar comentario</button>
     </div>
-    <button class="peek" type="button" aria-expanded="false">Ver el mensaje</button>
+    <a class="ver-link" target="_blank" rel="noopener">Ver workflow ↗</a>
+    <button class="peek" type="button" aria-expanded="false">Ver el mensaje del DM</button>
     <p class="msg" hidden></p>`;
   el.querySelector(".kw").textContent = kw;
   el.querySelector(".brand").textContent = marca;
-  el.querySelector(".ver").href = url;
+  el.querySelector(".ver-link").href = url;
   const msg = el.querySelector(".msg");
   msg.textContent = texto;
   const peek = el.querySelector(".peek");
   peek.addEventListener("click", () => {
     msg.hidden = !msg.hidden;
     peek.setAttribute("aria-expanded", String(!msg.hidden));
-    peek.textContent = msg.hidden ? "Ver el mensaje" : "Ocultar el mensaje";
+    peek.textContent = msg.hidden ? "Ver el mensaje del DM" : "Ocultar el mensaje";
   });
-  const btn = el.querySelector(".copiar");
-  btn.addEventListener("click", () => {
+  const copiarCon = (btn, dameTexto, etiqueta) => btn.addEventListener("click", () => {
+    const texto = dameTexto();
     const listo = () => {
       btn.classList.add("ok"); btn.textContent = "Copiado ✓";
-      setTimeout(() => { btn.classList.remove("ok"); btn.textContent = "Copiar mensaje"; }, 2200);
+      setTimeout(() => { btn.classList.remove("ok"); btn.textContent = etiqueta; }, 2200);
     };
     const aMano = () => {
-      // Si el teléfono no deja copiar solo, se muestra el mensaje seleccionado para copiarlo a mano.
-      msg.hidden = false; peek.textContent = "Ocultar el mensaje"; peek.setAttribute("aria-expanded","true");
+      // Si el teléfono no deja copiar solo, se muestra el texto seleccionado para copiarlo a mano.
+      msg.textContent = texto; msg.hidden = false; peek.textContent = "Ocultar el mensaje"; peek.setAttribute("aria-expanded","true");
       const r = document.createRange(); r.selectNodeContents(msg);
-      const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+      const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
       btn.textContent = "Cópielo a mano ↓";
-      setTimeout(() => { btn.textContent = "Copiar mensaje"; }, 3000);
+      setTimeout(() => { btn.textContent = etiqueta; msg.textContent = mensaje(kw, marca, url); }, 4000);
     };
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(texto).then(listo, aMano);
       else aMano();
     } catch (e) { aMano(); }
   });
+  copiarCon(el.querySelector(".copiar"), () => texto, "Copiar DM");
+  copiarCon(el.querySelector(".coment"), comentario, "Copiar comentario");
   grid.appendChild(el);
   return el;
 });
