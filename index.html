@@ -49,7 +49,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px 16px 14px;display:grid;gap:12px;min-width:0}
 .top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;min-width:0}
 .kw{font:700 26px/1.05 var(--display);letter-spacing:.01em;color:var(--ink);overflow-wrap:anywhere}
-.brand{font-size:13.5px;color:var(--soft);text-align:right;flex:none;max-width:50%}
+.brand{font-size:13.5px;color:var(--soft);text-align:right;flex:0 1 auto;max-width:60%}
 .msg{font-size:13px;color:var(--soft);background:var(--bg);border-radius:10px;padding:9px 11px;white-space:pre-wrap;overflow-wrap:anywhere;margin:0;user-select:all}
 .msg[hidden]{display:none!important}
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -60,6 +60,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .copiar:active{background:var(--clay-dark)}
 .copiar.ok,.coment.ok{background:var(--ok);color:var(--card);border-color:var(--ok)}
 .coment{background:transparent;border-color:var(--clay);color:var(--clay-dark)}
+.doble{margin:0;font-size:13.5px;font-weight:600;color:var(--clay-dark);background:var(--bg);border-radius:10px;padding:8px 10px}
 .ver-link{font:600 14px var(--body);color:var(--ink);text-decoration:underline;text-underline-offset:3px;justify-self:start}
 .ver-link:focus-visible{outline:3px solid var(--clay);outline-offset:2px;border-radius:4px}
 .peek{background:none;border:0;padding:0;font:500 13px var(--body);color:var(--clay-dark);cursor:pointer;justify-self:start}
@@ -116,7 +117,8 @@ const WORKFLOWS = [
   ["PROMPTED","ChatGPT","https://theaieditinglab-cmyk.github.io/workflows/prompted/"],
   ["SOURCES","Perplexity","https://theaieditinglab-cmyk.github.io/workflows/sources/"],
   ["SPOTIFY","Spotify","https://theaieditinglab-cmyk.github.io/workflows/spotify/"],
-  ["STUDIO","Lab · Studio","https://theaieditinglab-cmyk.github.io/workflows/studio/"],
+  ["STUDIO","Lab · Studio (edu del equipo en un chat)","https://theaieditinglab-cmyk.github.io/workflows/studio/"],
+  ["STUDIO","Lab · One Terminal (comercial del boss y las 5 pm)","https://theaieditinglab-cmyk.github.io/workflows/one-terminal/"],
   ["STYLES","Lab · 10 estilos","https://theaieditinglab-cmyk.github.io/workflows/styles/"],
   ["TAB","Cursor","https://theaieditinglab-cmyk.github.io/workflows/tab/"],
   ["TEMPLATE","Notion","https://theaieditinglab-cmyk.github.io/workflows/template/"],
@@ -138,7 +140,9 @@ Made with Claude by The AI Editing Lab. Enjoy!`;
 }
 
 
-const repetidas = WORKFLOWS.map(w => w[0]).filter((k, i, a) => a.indexOf(k) !== i);
+// Palabras repetidas en videos YA publicados (no se pueden cambiar): se muestran las dos tarjetas con aviso.
+const REPETIDAS_PUBLICADAS = ["STUDIO"];
+const repetidas = WORKFLOWS.map(w => w[0]).filter((k, i, a) => a.indexOf(k) !== i && !REPETIDAS_PUBLICADAS.includes(k));
 if (repetidas.length) {
   const av = document.createElement("p");
   av.style.cssText = "background:#b3261e;color:#fff;padding:12px 14px;border-radius:12px;font-weight:600";
@@ -177,6 +181,11 @@ const cards = WORKFLOWS.map(([kw, marca, url], i) => {
     <button class="peek" type="button" aria-expanded="false">Ver el mensaje del DM</button>
     <p class="msg" hidden></p>`;
   el.querySelector(".kw").textContent = kw;
+  if (WORKFLOWS.filter(w => w[0] === kw).length > 1) {
+    const av = document.createElement("p"); av.className = "doble";
+    av.textContent = "Esta palabra está en 2 videos. Mire en qué reel comentaron y use esta tarjeta solo si es este:";
+    el.querySelector(".top").after(av);
+  }
   el.querySelector(".brand").textContent = marca;
   el.querySelector(".ver-link").href = url;
   const msg = el.querySelector(".msg");
