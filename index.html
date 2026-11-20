@@ -105,29 +105,49 @@ const WORKFLOWS = [
   ["LINE","Linear","https://theaieditinglab-cmyk.github.io/workflows/line/"],
   ["LISTEN","AirPods","https://theaieditinglab-cmyk.github.io/workflows/listen/"],
   ["MAPS","Google Maps","https://theaieditinglab-cmyk.github.io/workflows/maps/"],
-  ["MOTION","AI Editing Lab","https://theaieditinglab-cmyk.github.io/workflows/motion/"],
-  ["ONE LINE","AI Editing Lab","https://theaieditinglab-cmyk.github.io/workflows/one-line/"],
+  ["MOTION","Lab · Motion con Claude","https://theaieditinglab-cmyk.github.io/workflows/motion/"],
   ["PARTY","M&M's","https://theaieditinglab-cmyk.github.io/workflows/party/"],
   ["PLAY","Nintendo Switch 2","https://theaieditinglab-cmyk.github.io/workflows/play/"],
+  ["PROMPTED","ChatGPT","https://theaieditinglab-cmyk.github.io/workflows/prompted/"],
   ["SOURCES","Perplexity","https://theaieditinglab-cmyk.github.io/workflows/sources/"],
   ["SPOTIFY","Spotify","https://theaieditinglab-cmyk.github.io/workflows/spotify/"],
+  ["STUDIO","Lab · Studio (pide reel)","https://theaieditinglab-cmyk.github.io/workflows/studio/"],
+  ["STYLES","Lab · 10 estilos","https://theaieditinglab-cmyk.github.io/workflows/styles/"],
   ["TAB","Cursor","https://theaieditinglab-cmyk.github.io/workflows/tab/"],
   ["TEMPLATE","Notion","https://theaieditinglab-cmyk.github.io/workflows/template/"],
-  ["TIME","AI Editing Lab","https://theaieditinglab-cmyk.github.io/workflows/time/"],
+  ["TIME","Lab · 2026 vs 2027","https://theaieditinglab-cmyk.github.io/workflows/time/"],
+  ["TOOLS","Lab · 4 herramientas","https://theaieditinglab-cmyk.github.io/workflows/tools/"],
+  ["TRANSFER","Wise","https://theaieditinglab-cmyk.github.io/workflows/transfer/"],
   ["TUDUM","Netflix","https://theaieditinglab-cmyk.github.io/workflows/tudum/"],
   ["UNLEASH","Monster Energy","https://theaieditinglab-cmyk.github.io/workflows/unleash/"],
   ["VOICE","ElevenLabs","https://theaieditinglab-cmyk.github.io/workflows/voice/"],
 ];
 
 // El mensaje del DM va en inglés, como el resto de la cuenta.
-function mensaje(marca, url){
-  const de = marca === "AI Editing Lab" ? "this video" : `our ${marca} video`;
-  return `Hey! 🙌 Here's the full workflow behind ${de}, step by step:\n${url}\n\nMade with Claude by The AI Editing Lab. Enjoy!`;
+function mensaje(kw, marca, url){
+  if (kw === "STUDIO") return `Hey! 🙌 Love that you want one! Send us your brand name and a reel you love, and we'll make one for your brand matching its rhythm, colors and style.
+
+Meanwhile, here's how we made this one: ${url}
+
+The AI Editing Lab`;
+  const de = marca.startsWith("Lab") ? "this video" : `our ${marca} video`;
+  return `Hey! 🙌 Here's the full workflow behind ${de}, step by step:
+${url}
+
+Made with Claude by The AI Editing Lab. Enjoy!`;
 }
 
+
+const repetidas = WORKFLOWS.map(w => w[0]).filter((k, i, a) => a.indexOf(k) !== i);
+if (repetidas.length) {
+  const av = document.createElement("p");
+  av.style.cssText = "background:#b3261e;color:#fff;padding:12px 14px;border-radius:12px;font-weight:600";
+  av.textContent = "Ojo: estas palabras están repetidas, avísele a Claude: " + [...new Set(repetidas)].join(", ");
+  document.querySelector(".searchbar").before(av);
+}
 const grid = document.getElementById("grid");
 const cards = WORKFLOWS.map(([kw, marca, url], i) => {
-  const texto = mensaje(marca, url);
+  const texto = mensaje(kw, marca, url);
   const el = document.createElement("article");
   el.className = "card";
   el.dataset.buscar = (kw + " " + marca).toUpperCase();
