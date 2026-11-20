@@ -295,4 +295,10 @@ My version is for [my brand or product], in [format and duration]. Start by aski
 async function cp(x){try{await navigator.clipboard.writeText(x);return true}catch(e){const a=document.createElement('textarea');a.value=x;a.setAttribute('readonly','');a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();let ok=false;try{ok=document.execCommand('copy')}catch(_){}a.remove();return ok}}
 document.querySelectorAll('.code').forEach(c=>{const b=c.querySelector('button');if(!b)return;b.addEventListener('click',async()=>{const t=c.querySelector('pre').innerText;if(await cp(t)){b.textContent='Copied';b.classList.add('ok');setTimeout(()=>{b.textContent='Copy';b.classList.remove('ok')},1500)}else{const r=document.createRange();r.selectNodeContents(c.querySelector('pre'));const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Selected';setTimeout(()=>{b.textContent='Copy'},1500)}})});
 </script>
+<!-- volver-lab --><script>(function(){try{var h=location.origin+'/workflows/',r=document.referrer||'';
+if(!(r===h||r===h+'index.html'||r.indexOf(h+'#')===0||r.indexOf(h+'?')===0))return;
+var a=document.createElement('a');a.href='../';a.textContent='← Volver';
+a.onclick=function(e){if(history.length>1){e.preventDefault();history.back();}};
+a.style.cssText='position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:2147483647;background:#141210;color:#F6F0E6;border:2px solid #F6F0E6;font:600 16px system-ui,-apple-system,sans-serif;padding:12px 18px;border-radius:999px;text-decoration:none;box-shadow:0 6px 18px rgba(0,0,0,.35)';
+document.body.appendChild(a);}catch(e){}})();</script>
 </body></html>

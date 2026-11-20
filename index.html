@@ -177,7 +177,7 @@ const cards = WORKFLOWS.map(([kw, marca, url], i) => {
       <button class="btn copiar" type="button" id="copiar-${i}">Copiar DM</button>
       <button class="btn coment" type="button" id="coment-${i}">Copiar comentario</button>
     </div>
-    <a class="ver-link" target="_blank" rel="noopener">Ver workflow ↗</a>
+    <a class="ver-link">Ver workflow →</a>
     <button class="peek" type="button" aria-expanded="false">Ver el mensaje del DM</button>
     <p class="msg" hidden></p>`;
   el.querySelector(".kw").textContent = kw;
@@ -231,8 +231,12 @@ function filtrar(){
   count.textContent = q ? `${n} de ${cards.length} workflows` : `${cards.length} workflows`;
   empty.hidden = n !== 0;
 }
-buscar.addEventListener("input", filtrar);
+buscar.addEventListener("input", () => { filtrar(); try { sessionStorage.setItem("wf-buscar", buscar.value); } catch (e) {} });
+try { const q = sessionStorage.getItem("wf-buscar"); if (q) buscar.value = q; } catch (e) {}
 filtrar();
+// Al volver de un workflow, quedar donde estaba
+addEventListener("pagehide", () => { try { sessionStorage.setItem("wf-y", String(scrollY)); } catch (e) {} });
+try { const y = +sessionStorage.getItem("wf-y"); if (y) requestAnimationFrame(() => scrollTo(0, y)); } catch (e) {}
 </script>
 
 </body>
