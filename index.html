@@ -111,7 +111,7 @@ const WORKFLOWS = [
   ["PROMPTED","ChatGPT","https://theaieditinglab-cmyk.github.io/workflows/prompted/"],
   ["SOURCES","Perplexity","https://theaieditinglab-cmyk.github.io/workflows/sources/"],
   ["SPOTIFY","Spotify","https://theaieditinglab-cmyk.github.io/workflows/spotify/"],
-  ["STUDIO","Lab · Studio (pide reel)","https://theaieditinglab-cmyk.github.io/workflows/studio/"],
+  ["STUDIO","Lab · Studio","https://theaieditinglab-cmyk.github.io/workflows/studio/"],
   ["STYLES","Lab · 10 estilos","https://theaieditinglab-cmyk.github.io/workflows/styles/"],
   ["TAB","Cursor","https://theaieditinglab-cmyk.github.io/workflows/tab/"],
   ["TEMPLATE","Notion","https://theaieditinglab-cmyk.github.io/workflows/template/"],
@@ -125,11 +125,6 @@ const WORKFLOWS = [
 
 // El mensaje del DM va en inglés, como el resto de la cuenta.
 function mensaje(kw, marca, url){
-  if (kw === "STUDIO") return `Hey! 🙌 Love that you want one! Send us your brand name and a reel you love, and we'll make one for your brand matching its rhythm, colors and style.
-
-Meanwhile, here's how we made this one: ${url}
-
-The AI Editing Lab`;
   const de = marca.startsWith("Lab") ? "this video" : `our ${marca} video`;
   return `Hey! 🙌 Here's the full workflow behind ${de}, step by step:
 ${url}
